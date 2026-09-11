@@ -37,11 +37,13 @@ end
 -- Your original visual style
 -- ---------------------------------------------------------------------------
 
-if appearance.is_dark() then
-  config.color_scheme = 'Tokyo Night'
-else
-  config.color_scheme = 'Tokyo Night Day'
-end
+config.color_scheme = 'Tokyo Night'
+-- Sometimes below breaks when using workspaces?
+-- if appearance.is_dark() then
+--   config.color_scheme = 'Tokyo Night'
+-- else
+--   config.color_scheme = 'Tokyo Night Day'
+-- end
 
 config.font = wezterm.font('Hack Nerd Font', { weight = 'DemiBold' })
 config.font_size = 12
