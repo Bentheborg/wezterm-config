@@ -143,7 +143,7 @@ local function git_segment(info)
 	if info.dirty == 0 then
 		table.insert(parts, '✓')
 	else
-		table.insert(parts, '●' .. info.dirty)
+		table.insert(parts, ' ' .. info.dirty)
 	end
 
 	if info.ahead > 0 then
@@ -332,7 +332,7 @@ local function segments_for_right_status(window, pane)
 	add(agent_state(pane) or detected_app(pane))
 	add(remote_segment(host))
 
-	add(wezterm.strftime '%a %b %-d %H:%M')
+	add(" "..wezterm.strftime '%a %b %-d %H:%M')
 
 	return segments
 end
