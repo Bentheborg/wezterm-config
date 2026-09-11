@@ -67,6 +67,37 @@ M.keys = {
 		}),
 	},
 
+	{
+		key = "v",
+		mods = "CTRL",
+		action = wezterm.action_callback(function(window, pane)
+			local process = pane:get_foreground_process_name() or ""
+			process = process:lower()
+
+			if process:match("pwsh%.exe$") or process:match("powershell%.exe$") then
+				window:perform_action(
+					wezterm.action.SendKey({ key = "v", mods = "CTRL" }),
+					pane
+				)
+			else
+				window:perform_action(
+					wezterm.action.PasteFrom("Clipboard"),
+					pane
+				)
+			end
+		end),
+	},
+	{
+		key = "V",
+		mods = "CTRL|SHIFT",
+		action = wezterm.action.PasteFrom("Clipboard"),
+	},
+	{
+		key = "v",
+		mods = "CTRL|ALT",
+		action = wezterm.action.SendKey({ key = "v", mods = "CTRL" }),
+	},
+
 	-- Ctrl+Shift+A selects the entire terminal scrollback.
 	{
 		key = "A",
