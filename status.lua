@@ -187,7 +187,7 @@ local function detected_app(pane)
 			or process == 'neovim'
 			or text:find('neovim', 1, true)
 	then
-		return ' Neovim'
+		return ' Neovim'
 	end
 
 	-- Don't waste status space on the normal shell.
