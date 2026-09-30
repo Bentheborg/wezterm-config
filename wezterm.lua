@@ -51,6 +51,28 @@ config.font_size = 12
 config.max_fps = 120
 config.window_close_confirmation = "NeverPrompt"
 config.default_cursor_style = "BlinkingBar"
+config.cursor_animation = {
+	enabled = true,
+	fps = 120,
+
+	motion = {
+		preset = "Tail",
+
+		duration_ms = 90,
+		easing = "EaseOutCirc",
+		min_distance = 1.5,
+		blur = 2.0,
+
+		tail = {
+			max_length = 0.20,
+		},
+	},
+
+	mode_change = {
+		preset = "Ripple",
+	},
+}
+
 config.unzoom_on_switch_pane = true
 config.tab_max_width = 32
 
