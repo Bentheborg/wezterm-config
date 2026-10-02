@@ -2,14 +2,6 @@ local wezterm = require("wezterm")
 
 local M = {}
 
-local COLORS = {
-	bar = "#1a1b26",
-	active_bg = "#e0af68",
-	active_fg = "#1a1b26",
-	inactive_bg = "#3b3d4d",
-	inactive_fg = "#a9b1d6",
-}
-
 local function basename(path)
 	if not path then
 		return nil
@@ -85,21 +77,11 @@ local function tab_name(tab)
 	return "shell"
 end
 
-function M.setup()
+function M.setup(theme)
 	wezterm.on("format-tab-title", function(tab, tabs)
-		local bg = tab.is_active and COLORS.active_bg or COLORS.inactive_bg
-
-		local fg = tab.is_active and COLORS.active_fg or COLORS.inactive_fg
-
-		-- Powerline separator should transition into the next tab colour.
-		local next_bg = COLORS.bar
-		local next_tab = tabs[tab.tab_index + 2]
-
-		if next_tab then
-			next_bg = next_tab.is_active and COLORS.active_bg or COLORS.inactive_bg
-		end
-
-		local title = string.format(" %d  %s ", tab.tab_index + 1, tab_name(tab))
+		local bg = tab.is_active and theme.roles.surface or theme.roles.background
+		local fg = tab.is_active and theme.roles.foreground or theme.roles.muted
+		local title = string.format(" %s%d  %s ", tab.is_active and "▍" or " ", tab.tab_index + 1, tab_name(tab))
 
 		return {
 			{
@@ -114,21 +96,6 @@ function M.setup()
 			},
 			{
 				Text = title,
-			},
-
-			-- Seamless Powerline transition into the next tab.
-			{
-				Foreground = {
-					Color = bg,
-				},
-			},
-			{
-				Background = {
-					Color = next_bg,
-				},
-			},
-			{
-				Text = "",
 			},
 		}
 	end)

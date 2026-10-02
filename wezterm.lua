@@ -5,9 +5,9 @@ local background = require("background")
 local keybinds = require("keybinds")
 local status = require("status")
 local projects = require("projects")
-local appearance = require("appearance")
 local platform = require("platform")
 local tabs = require("tabs")
+local theme = require("theme")
 
 -- ---------------------------------------------------------------------------
 -- Shell
@@ -35,16 +35,13 @@ if platform.is_windows then
 end
 
 -- ---------------------------------------------------------------------------
--- Your original visual style
+-- Theme follows Omarchy on Linux. Windows and invalid Omarchy data stay Tokyo Night.
 -- ---------------------------------------------------------------------------
 
-config.color_scheme = "Tokyo Night"
--- Sometimes below breaks when using workspaces?
--- if appearance.is_dark() then
---   config.color_scheme = 'Tokyo Night'
--- else
---   config.color_scheme = 'Tokyo Night Day'
--- end
+local active_theme = theme.current()
+
+config.color_scheme = active_theme.color_scheme
+config.colors = active_theme.colors
 
 config.font = wezterm.font("Hack Nerd Font", { weight = "DemiBold" })
 config.font_size = 12
@@ -81,30 +78,8 @@ if platform.is_windows then
 end
 
 config.inactive_pane_hsb = {
-	saturation = 0.95,
-	brightness = 0.6,
-}
-
-config.colors = {
-	tab_bar = {
-		background = "#1a1b26",
-
-		inactive_tab = {
-			bg_color = "#3b3d4d",
-			fg_color = "#a9b1d6",
-		},
-
-		active_tab = {
-			bg_color = "#e0af68",
-			fg_color = "#1a1b26",
-			intensity = "Bold",
-		},
-
-		inactive_tab_hover = {
-			bg_color = "#4b4d5e",
-			fg_color = "#c0caf5",
-		},
-	},
+	saturation = 0.98,
+	brightness = 0.82,
 }
 
 -- Bring the tab bar back because the new status/workspace information lives
@@ -127,7 +102,7 @@ config.key_tables = keybinds.key_tables
 
 -- Workspace + time + hostname powerline details on the right of the tab bar.
 projects.setup()
-tabs.setup()
-status.setup()
+tabs.setup(active_theme)
+status.setup(active_theme)
 
 return config

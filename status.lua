@@ -1,6 +1,4 @@
 local wezterm = require 'wezterm'
-local appearance = require 'appearance'
-
 local M = {}
 
 local git_cache = {}
@@ -291,14 +289,17 @@ end
 local function segments_for_right_status(window, pane)
 	local segments = {}
 
-	local function add(value)
+	local function add(value, color)
 		if value and value ~= '' then
-			table.insert(segments, value)
+			table.insert(segments, {
+				color = color,
+				text = value,
+			})
 		end
 	end
 
 	if is_zoomed(window) then
-		add '󰊓 ZOOMED'
+		add('󰊓 ZOOMED', 'accent')
 	end
 
 	add(mode_segment(window))
@@ -310,7 +311,7 @@ local function segments_for_right_status(window, pane)
 		local folder = basename(cwd)
 
 		if folder then
-			add(' ' .. folder)
+			add(' ' .. folder, 'muted')
 		end
 	end
 
@@ -319,86 +320,37 @@ local function segments_for_right_status(window, pane)
 	local workspace = window:active_workspace()
 
 	if workspace and workspace ~= 'default' then
-		add('󰖲 ' .. workspace)
+		add('󰖲 ' .. workspace, 'accent')
 	end
 
 	-- Git contributes branch/status only.
 	local git = git_info(cwd)
 
 	if git then
-		add(git_segment(git))
+		add(git_segment(git), 'accent')
 	end
 
-	add(agent_state(pane) or detected_app(pane))
-	add(remote_segment(host))
+	add(agent_state(pane) or detected_app(pane), 'secondary')
+	add(remote_segment(host), 'secondary')
 
-	add(" "..wezterm.strftime '%a %b %-d %H:%M')
+	add(" "..wezterm.strftime '%a %b %-d %H:%M', 'foreground')
 
 	return segments
 end
 
-function M.setup()
+function M.setup(theme)
 	wezterm.on('update-status', function(window, pane)
-		local arrow = wezterm.nerdfonts.pl_right_hard_divider
 		local segments = segments_for_right_status(window, pane)
-
-		local palette = window:effective_config().resolved_palette
-		local bg = wezterm.color.parse(palette.background)
-		local fg = palette.foreground
-
-		local gradient_to = bg
-		local gradient_from
-
-		if appearance.is_dark() then
-			gradient_from = gradient_to:lighten(0.2)
-		else
-			gradient_from = gradient_to:darken(0.2)
-		end
-
-		local gradient = wezterm.color.gradient({
-			orientation = 'Horizontal',
-			colors = {
-				gradient_from,
-				gradient_to,
-			},
-		}, #segments)
-
 		local elements = {}
 
 		for i, segment in ipairs(segments) do
-			if i == 1 then
-				-- Explicit background fixes the white speck you found.
-				table.insert(elements, {
-					Background = {
-						Color = palette.background,
-					},
-				})
-			end
-
 			table.insert(elements, {
 				Foreground = {
-					Color = gradient[i],
+					Color = theme.roles[segment.color] or theme.roles.muted,
 				},
 			})
-
 			table.insert(elements, {
-				Text = arrow,
-			})
-
-			table.insert(elements, {
-				Foreground = {
-					Color = fg,
-				},
-			})
-
-			table.insert(elements, {
-				Background = {
-					Color = gradient[i],
-				},
-			})
-
-			table.insert(elements, {
-				Text = ' ' .. segment .. ' ',
+				Text = (i > 1 and '  ' or '') .. segment.text,
 			})
 		end
 
